@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">WorldCup AI Company 预测工作流</title>
+  <desc id="desc">从公开数据采集到质量门槛、结构化预测、AI 复核、前端展示和赛后记忆的闭环。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#121810"/>
+      <stop offset="1" stop-color="#222819"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#293324"/>
+      <stop offset="1" stop-color="#171d15"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f1d58a"/>
+      <stop offset="1" stop-color="#be8e38"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#d9b45d"/>
+    </marker>
+    <style>
+      .title{font:800 34px "Microsoft YaHei", "Segoe UI", sans-serif; fill:#f7e6ad}
+      .sub{font:400 17px "Microsoft YaHei", "Segoe UI", sans-serif; fill:#b9c7ac}
+      .node-title{font:800 20px "Microsoft YaHei", "Segoe UI", sans-serif; fill:#fff4cb}
+      .node-body{font:400 15px "Microsoft YaHei", "Segoe UI", sans-serif; fill:#d8e2ce}
+      .small{font:400 13px "Microsoft YaHei", "Segoe UI", sans-serif; fill:#98aa8f}
+      .node{fill:url(#card);stroke:#526242;stroke-width:2}
+      .accent{fill:url(#gold)}
+      .line{fill:none;stroke:#d9b45d;stroke-width:3;marker-end:url(#arrow)}
+      .loop{fill:none;stroke:#83a96e;stroke-width:2.5;stroke-dasharray:8 8;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <text x="640" y="52" text-anchor="middle" dominant-baseline="middle" class="title">预测与复盘闭环</text>
+  <text x="640" y="88" text-anchor="middle" dominant-baseline="middle" class="sub">事实数据进模型，AI 解释和复核，赛后结果反哺下一轮判断</text>
+
+  <g transform="translate(56 154)">
+    <rect class="node" x="0" y="0" width="168" height="132" rx="18"/>
+    <circle class="accent" cx="36" cy="36" r="15"/>
+    <text class="node-title" x="84" y="34" text-anchor="middle">1. 自动采集</text>
+    <text class="node-body" x="24" y="70">赛程 / 比分 / 排名</text>
+    <text class="node-body" x="24" y="94">Elo / 近期战绩</text>
+    <text class="small" x="24" y="118">后台定时刷新</text>
+  </g>
+
+  <g transform="translate(276 154)">
+    <rect class="node" x="0" y="0" width="168" height="132" rx="18"/>
+    <circle class="accent" cx="36" cy="36" r="15"/>
+    <text class="node-title" x="88" y="34" text-anchor="middle">2. 数据分拣</text>
+    <text class="node-body" x="24" y="70">去重 / 标准化</text>
+    <text class="node-body" x="24" y="94">来源可信度评分</text>
+    <text class="small" x="24" y="118">生成证据包</text>
+  </g>
+
+  <g transform="translate(496 154)">
+    <rect class="node" x="0" y="0" width="168" height="132" rx="18"/>
+    <circle class="accent" cx="36" cy="36" r="15"/>
+    <text class="node-title" x="92" y="34" text-anchor="middle">3. 质量门槛</text>
+    <text class="node-body" x="24" y="70">缺失项检查</text>
+    <text class="node-body" x="24" y="94">可解释/可强研判</text>
+    <text class="small" x="24" y="118">不够则降级</text>
+  </g>
+
+  <g transform="translate(716 154)">
+    <rect class="node" x="0" y="0" width="168" height="132" rx="18"/>
+    <circle class="accent" cx="36" cy="36" r="15"/>
+    <text class="node-title" x="92" y="34" text-anchor="middle">4. 胜率模型</text>
+    <text class="node-body" x="24" y="70">Elo + FIFA</text>
+    <text class="node-body" x="24" y="94">状态 + 市场校准</text>
+    <text class="small" x="24" y="118">输出概率和解释</text>
+  </g>
+
+  <g transform="translate(936 154)">
+    <rect class="node" x="0" y="0" width="168" height="132" rx="18"/>
+    <circle class="accent" cx="36" cy="36" r="15"/>
+    <text class="node-title" x="92" y="34" text-anchor="middle">5. AI 复核</text>
+    <text class="node-body" x="24" y="70">压缩证据</text>
+    <text class="node-body" x="24" y="94">生成研究报告</text>
+    <text class="small" x="24" y="118">控制 token 成本</text>
+  </g>
+
+  <path class="line" d="M224 220 H276"/>
+  <path class="line" d="M444 220 H496"/>
+  <path class="line" d="M664 220 H716"/>
+  <path class="line" d="M884 220 H936"/>
+
+  <g transform="translate(316 396)">
+    <rect class="node" x="0" y="0" width="220" height="120" rx="18"/>
+    <text class="node-title" x="110" y="34" text-anchor="middle">前端战术桌</text>
+    <text class="node-body" x="28" y="70">预测队列 / 球队研究</text>
+    <text class="node-body" x="28" y="94">可信度 / 过程日志</text>
+  </g>
+
+  <g transform="translate(744 396)">
+    <rect class="node" x="0" y="0" width="220" height="120" rx="18"/>
+    <text class="node-title" x="110" y="34" text-anchor="middle">赛后复盘记忆</text>
+    <text class="node-body" x="28" y="70">命中/偏差/Brier</text>
+    <text class="node-body" x="28" y="94">写入长期上下文</text>
+  </g>
+
+  <path class="line" d="M1020 286 C1020 360 536 340 486 396"/>
+  <path class="line" d="M1020 286 C1060 390 952 372 888 396"/>
+  <path class="loop" d="M744 456 C560 572 190 546 140 288"/>
+
+  <text class="small" x="640" y="586" text-anchor="middle">核心约束：赛前建议在比赛结束后冻结；已结束比赛进入复盘，不再继续生成投注建议。</text>
+</svg>

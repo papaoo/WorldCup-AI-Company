@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>世界杯 AI 战术桌 - 方向 B</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #11100c;
+      --wood: #2a2116;
+      --felt: #133728;
+      --felt-2: #0d2a20;
+      --line: rgba(255, 246, 211, 0.15);
+      --text: #fff8e8;
+      --muted: #b8aa8c;
+      --gold: #f2c66d;
+      --lime: #a8ff70;
+      --blue: #75d7ff;
+      --red: #ff7d6b;
+      --paper: #e8dcc2;
+      --ink: #17130d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 12%, rgba(242,198,109,0.18), transparent 32rem),
+        radial-gradient(circle at 12% 80%, rgba(117,215,255,0.1), transparent 28rem),
+        linear-gradient(135deg, #0f0d0a, #1a1711 52%, #0a0b09);
+      color: var(--text);
+      font-family: "LXGW WenKai Screen", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.18;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 5px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 7px);
+      mix-blend-mode: soft-light;
+    }
+
+    .app {
+      width: min(1540px, calc(100vw - 42px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(242,198,109,0.35);
+      color: var(--gold);
+      background: rgba(242,198,109,0.08);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 6px rgba(242,198,109,0.12);
+    }
+
+    h1 {
+      max-width: 1050px;
+      margin: 18px 0 0;
+      font-size: clamp(44px, 6.2vw, 96px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .top p {
+      margin: 18px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    .control-stack {
+      min-width: 360px;
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.045);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .control {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      border-radius: 20px;
+      padding: 12px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .control i {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: #161006;
+      font-style: normal;
+      background: var(--gold);
+      font-weight: 950;
+    }
+
+    .control strong { display: block; font-size: 14px; }
+    .control span { color: var(--muted); font-size: 12px; }
+    .control b { color: var(--lime); font-size: 12px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 310px 1fr 350px;
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .panel {
+      border-radius: 34px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.022)),
+        rgba(22, 17, 11, 0.86);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+
+    .panel-title {
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title span {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .panel-title strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 19px;
+    }
+
+    .group-board {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+      max-height: 780px;
+      overflow: auto;
+    }
+
+    .group-card {
+      border-radius: 24px;
+      padding: 14px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,246,211,0.1);
+    }
+
+    .group-card header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .group-card header strong { color: var(--gold); }
+    .group-card header span { color: var(--muted); font-size: 12px; }
+
+    .team-pill {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 10px 0 6px;
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(0,0,0,0.18);
+      margin-top: 7px;
+    }
+
+    .team-pill i {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #120d06;
+      font-style: normal;
+      background: var(--paper);
+      font-size: 9px;
+      font-weight: 950;
+    }
+
+    .team-pill b {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .table-shell {
+      padding: 16px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.06), transparent),
+        var(--wood);
+      border-radius: 42px;
+      border: 1px solid rgba(242,198,109,0.22);
+      box-shadow:
+        0 44px 110px rgba(0,0,0,0.5),
+        inset 0 2px 0 rgba(255,255,255,0.12),
+        inset 0 -28px 60px rgba(0,0,0,0.24);
+    }
+
+    .tactical-table {
+      min-height: 790px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,255,255,0.045) 1px, transparent 1px),
+        radial-gradient(circle at center, transparent 0 76px, rgba(255,255,255,0.12) 77px 78px, transparent 79px),
+        linear-gradient(135deg, var(--felt), var(--felt-2));
+      background-size: 54px 54px, 54px 54px, auto, auto;
+      box-shadow: inset 0 0 0 10px rgba(0,0,0,0.18);
+    }
+
+    .field-line {
+      position: absolute;
+      inset: 46px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 22px;
+      pointer-events: none;
+    }
+
+    .midline {
+      position: absolute;
+      left: 50%;
+      top: 46px;
+      bottom: 46px;
+      width: 1px;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .match-card {
+      position: absolute;
+      left: 50%;
+      top: 38px;
+      transform: translateX(-50%);
+      width: min(560px, calc(100% - 40px));
+      border-radius: 28px;
+      padding: 20px;
+      background: rgba(8,18,14,0.82);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .match-card span {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .match-card h2 {
+      margin: 10px 0;
+      font-size: clamp(30px, 4vw, 54px);
+      letter-spacing: 0;
+    }
+
+    .match-card p {
+      margin: 0;
+      color: #d2c7aa;
+      line-height: 1.7;
+    }
+
+    .employee-desk {
+      position: absolute;
+      width: 210px;
+      min-height: 170px;
+      border-radius: 28px;
+      padding: 14px;
+      background:
+        linear-gradient(145deg, rgba(232,220,194,0.94), rgba(194,169,126,0.96));
+      color: var(--ink);
+      box-shadow: 0 24px 62px rgba(0,0,0,0.35);
+    }
+
+    .employee-desk.left { left: 54px; top: 246px; }
+    .employee-desk.right { right: 54px; top: 246px; }
+    .employee-desk.data { left: 54px; bottom: 62px; }
+    .employee-desk.risk { right: 54px; bottom: 62px; }
+
+    .employee-desk::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: -13px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.34);
+      filter: blur(12px);
+    }
+
+    .figure {
+      width: 54px;
+      height: 68px;
+      border-radius: 24px 24px 18px 18px;
+      background:
+        radial-gradient(circle at 50% 18%, #ffe9c6 0 14px, transparent 15px),
+        linear-gradient(180deg, #27323a 28px, #a8ff70 29px);
+      margin-top: -2px;
+      box-shadow: inset 0 -7px 0 rgba(0,0,0,0.12);
+    }
+
+    .desk-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .desk-head strong {
+      display: block;
+      font-size: 16px;
+    }
+
+    .desk-head span {
+      font-size: 12px;
+      color: rgba(23,19,13,0.66);
+    }
+
+    .employee-desk p {
+      margin: 12px 0 0;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .paper-note {
+      position: absolute;
+      width: 190px;
+      border-radius: 18px;
+      padding: 16px;
+      color: var(--ink);
+      background: #f1e6c9;
+      box-shadow: 0 20px 58px rgba(0,0,0,0.28);
+      transform: rotate(-3deg);
+    }
+
+    .paper-note:nth-of-type(1) { left: 312px; top: 265px; }
+    .paper-note:nth-of-type(2) { right: 315px; top: 282px; transform: rotate(3deg); }
+    .paper-note:nth-of-type(3) { left: 50%; bottom: 135px; transform: translateX(-50%) rotate(-1deg); width: 250px; }
+
+    .paper-note span {
+      color: rgba(23,19,13,0.58);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .paper-note strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .prob-wheel {
+      position: absolute;
+      left: 50%;
+      top: 330px;
+      transform: translateX(-50%);
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        conic-gradient(var(--lime) 0 70%, var(--gold) 70% 91%, var(--blue) 91% 100%);
+      box-shadow: 0 30px 90px rgba(0,0,0,0.42);
+    }
+
+    .prob-wheel::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 50%;
+      background: #0e2119;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    }
+
+    .prob-wheel div {
+      position: relative;
+      text-align: center;
+    }
+
+    .prob-wheel span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .prob-wheel strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 42px;
+    }
+
+    .right-stack {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .forecast-card {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .forecast-line {
+      border-radius: 22px;
+      padding: 16px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,246,211,0.1);
+    }
+
+    .forecast-line header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .forecast-line strong { font-size: 16px; }
+    .forecast-line b { font-size: 22px; color: var(--lime); }
+
+    .track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.09);
+      overflow: hidden;
+    }
+
+    .track i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--lime);
+    }
+
+    .note-list {
+      padding: 0 18px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .note {
+      border-left: 3px solid var(--gold);
+      padding: 2px 0 2px 14px;
+      color: #d5cab0;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .source-ledger {
+      padding: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .source {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 14px;
+      border-radius: 18px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .source span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .source strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .source b {
+      color: var(--gold);
+    }
+
+    @media (max-width: 1220px) {
+      .top, .layout { grid-template-columns: 1fr; }
+      .control-stack { min-width: 0; }
+      .tactical-table { min-height: 920px; }
+      .paper-note:nth-of-type(1) { left: 48px; top: 450px; }
+      .paper-note:nth-of-type(2) { right: 48px; top: 460px; }
+      .employee-desk.data { bottom: 70px; }
+      .employee-desk.risk { bottom: 70px; }
+    }
+
+    @media (max-width: 760px) {
+      .app { width: calc(100vw - 22px); padding-top: 14px; }
+      h1 { font-size: 42px; }
+      .table-shell { border-radius: 28px; padding: 10px; }
+      .tactical-table { min-height: 1220px; border-radius: 22px; }
+      .employee-desk, .paper-note, .prob-wheel {
+        position: relative;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: auto;
+        margin: 16px;
+      }
+      .match-card {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        margin: 16px;
+        width: auto;
+      }
+      .prob-wheel {
+        width: 220px;
+        height: 220px;
+        margin: 22px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+  <main class="app">
+    <section class="top">
+      <div>
+        <span class="badge">方向 B / 战术桌交互概念</span>
+        <h1>把预测变成一张能推演的战术桌。</h1>
+        <p>这个方向适合做成你想要的“动画风格前端”：证据卡被员工推到桌面，概率盘随数据刷新转动，风险官把不可靠结论盖上黄色警示章。</p>
+      </div>
+      <aside class="control-stack">
+        <article class="control"><i>1</i><div><strong>采集资料</strong><span>赛程、球队、新闻线索入库</span></div><b>已完成</b></article>
+        <article class="control"><i>2</i><div><strong>员工分拣</strong><span>主客队研究员压缩证据</span></div><b>待刷新</b></article>
+        <article class="control"><i>3</i><div><strong>策略计算</strong><span>胜平负概率与置信度</span></div><b>可运行</b></article>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <aside class="panel">
+        <div class="panel-title">
+          <span>12 个小组</span>
+          <strong>球队员工席位</strong>
+        </div>
+        <div class="group-board">
+          <article class="group-card">
+            <header><strong>A 组</strong><span>4 名研究员</span></header>
+            <div class="team-pill"><span><i>MEX</i>墨西哥</span><b>主场线索</b></div>
+            <div class="team-pill"><span><i>RSA</i>南非</span><b>待补排名</b></div>
+            <div class="team-pill"><span><i>KOR</i>韩国</span><b>赛程就绪</b></div>
+            <div class="team-pill"><span><i>CZE</i>捷克</span><b>赛程就绪</b></div>
+          </article>
+          <article class="group-card">
+            <header><strong>C 组</strong><span>强弱差异明显</span></header>
+            <div class="team-pill"><span><i>BRA</i>巴西</span><b>优势</b></div>
+            <div class="team-pill"><span><i>MAR</i>摩洛哥</span><b>待校验</b></div>
+            <div class="team-pill"><span><i>HAI</i>海地</span><b>待补数据</b></div>
+            <div class="team-pill"><span><i>SCO</i>苏格兰</span><b>待补数据</b></div>
+          </article>
+          <article class="group-card">
+            <header><strong>F 组</strong><span>日本场次关注</span></header>
+            <div class="team-pill"><span><i>NED</i>荷兰</span><b>占位排名</b></div>
+            <div class="team-pill"><span><i>JPN</i>日本</span><b>排名 18</b></div>
+            <div class="team-pill"><span><i>SWE</i>瑞典</span><b>待补数据</b></div>
+            <div class="team-pill"><span><i>TUN</i>突尼斯</span><b>待补数据</b></div>
+          </article>
+          <article class="group-card">
+            <header><strong>L 组</strong><span>高关注比赛</span></header>
+            <div class="team-pill"><span><i>ENG</i>英格兰</span><b>排名 4</b></div>
+            <div class="team-pill"><span><i>CRO</i>克罗地亚</span><b>待补排名</b></div>
+            <div class="team-pill"><span><i>GHA</i>加纳</span><b>待补数据</b></div>
+            <div class="team-pill"><span><i>PAN</i>巴拿马</span><b>待补数据</b></div>
+          </article>
+        </div>
+      </aside>
+
+      <section class="table-shell">
+        <div class="tactical-table">
+          <div class="field-line"></div>
+          <div class="midline"></div>
+          <article class="match-card">
+            <span>重点推演 / C 组</span>
+            <h2>巴西 对阵 摩洛哥</h2>
+            <p>策略层当前给出巴西明显优势，但摩洛哥排名仍需替换占位值，因此 CEO 结论必须带风险脚注。</p>
+          </article>
+
+          <article class="employee-desk left">
+            <div class="desk-head"><div class="figure"></div><div><strong>巴西研究员</strong><span>球队资料包</span></div></div>
+            <p>已提交强队基线：FIFA 排名 3，历史强度先验明显。</p>
+          </article>
+
+          <article class="employee-desk right">
+            <div class="desk-head"><div class="figure"></div><div><strong>摩洛哥研究员</strong><span>情报核查</span></div></div>
+            <p>当前排名为占位，不能让模型把未知包装成确定性。</p>
+          </article>
+
+          <article class="paper-note">
+            <span>证据卡 A</span>
+            <strong>结构化赛程来源已交叉校验，比赛时间和场馆可用。</strong>
+          </article>
+          <article class="paper-note">
+            <span>证据卡 B</span>
+            <strong>球队强度缺口来自排名因子，但客队排名需要补真值。</strong>
+          </article>
+          <article class="paper-note">
+            <span>CEO 批注</span>
+            <strong>预测可发布，但应标为“中等置信”，等待阵容和近期战绩刷新。</strong>
+          </article>
+
+          <div class="prob-wheel">
+            <div>
+              <span>巴西胜率</span>
+              <strong>70.6%</strong>
+              <span>平局 21.1% / 摩洛哥 8.2%</span>
+            </div>
+          </div>
+
+          <article class="employee-desk data">
+            <div class="desk-head"><div class="figure"></div><div><strong>数据分析师</strong><span>策略层</span></div></div>
+            <p>排名边际贡献 +1.57，冷门保护 -0.10，生成 snapshot_aware_v1。</p>
+          </article>
+
+          <article class="employee-desk risk">
+            <div class="desk-head"><div class="figure"></div><div><strong>风险官</strong><span>降级审查</span></div></div>
+            <p>缺少近期战绩和阵容时，不允许输出“稳胆”类措辞。</p>
+          </article>
+        </div>
+      </section>
+
+      <aside class="panel right-stack">
+        <div class="panel-title">
+          <span>单场预测</span>
+          <strong>概率、置信度与风险</strong>
+        </div>
+        <div class="forecast-card">
+          <article class="forecast-line">
+            <header><strong>巴西胜</strong><b>70.6%</b></header>
+            <div class="track"><i style="width:70.6%"></i></div>
+          </article>
+          <article class="forecast-line">
+            <header><strong>平局</strong><b style="color:var(--gold)">21.1%</b></header>
+            <div class="track"><i style="width:21.1%; background:var(--gold)"></i></div>
+          </article>
+          <article class="forecast-line">
+            <header><strong>摩洛哥胜</strong><b style="color:var(--blue)">8.2%</b></header>
+            <div class="track"><i style="width:8.2%; background:var(--blue)"></i></div>
+          </article>
+        </div>
+
+        <div class="note-list">
+          <div class="note">当前结果来自结构化策略，不是 LLM 直接拍脑袋生成。</div>
+          <div class="note">LLM 应负责解释“为什么”，并指出数据缺口，不负责单独修改概率。</div>
+          <div class="note">如果补入赔率、Elo 和近期战绩，置信度会重新计算。</div>
+        </div>
+
+        <div class="panel-title">
+          <span>来源台账</span>
+          <strong>用户能追到每个判断</strong>
+        </div>
+        <div class="source-ledger">
+          <article class="source"><div><strong>FixtureDownload</strong><span>赛程交叉校验</span></div><b>0.72</b></article>
+          <article class="source"><div><strong>openfootball</strong><span>开源版本化数据</span></div><b>0.78</b></article>
+          <article class="source"><div><strong>worldcup26 public feed</strong><span>球队与赛程 bootstrap</span></div><b>0.62</b></article>
+          <article class="source"><div><strong>RSS 新闻</strong><span>待分拣情报线索</span></div><b>0.43</b></article>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

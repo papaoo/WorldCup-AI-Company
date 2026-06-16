@@ -1,0 +1,23 @@
+{
+  "source": "manual_file_sample",
+  "items": [
+    {
+      "snapshot_type": "team_intel",
+      "object_id": "team_arg",
+      "match_id": "match_arg_jpn",
+      "content": {
+        "form_note": "Argentina sample file: stable lineup and strong counter-pressing.",
+        "risk_note": "Recheck late injury news before kickoff.",
+        "confidence": "medium"
+      }
+    },
+    {
+      "snapshot_type": "match_intel",
+      "match_id": "match_arg_jpn",
+      "content": {
+        "venue_note": "Sample file neutral venue note.",
+        "data_quality": "manual_sample"
+      }
+    }
+  ]
+}

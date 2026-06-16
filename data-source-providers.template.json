@@ -1,0 +1,115 @@
+{
+  "enabled": true,
+  "interval_minutes": 30,
+  "adaptive_schedule_enabled": true,
+  "run_intelligence_triage": true,
+  "trigger_employee_reports": true,
+  "trigger_reports_only_when_new_data": true,
+  "max_report_teams": 8,
+  "triage_snapshot_limit": 800,
+  "auto_llm_reports_enabled": false,
+  "llm_report_interval_minutes": 360,
+  "max_llm_report_teams": 2,
+  "sources": [
+    {
+      "id": "worldcup26_games",
+      "enabled": true,
+      "source_name": "worldcup26_games",
+      "provider": "worldcup26",
+      "query": "games"
+    },
+    {
+      "id": "worldcup26_teams",
+      "enabled": true,
+      "source_name": "worldcup26_teams",
+      "provider": "worldcup26",
+      "query": "teams"
+    },
+    {
+      "id": "fifa_official_mens_ranking",
+      "enabled": true,
+      "source_name": "fifa_official_mens_ranking",
+      "provider": "fifa_ranking",
+      "snapshot_type": "team_ranking"
+    },
+    {
+      "id": "world_football_elo",
+      "enabled": true,
+      "source_name": "world_football_elo",
+      "provider": "world_football_elo",
+      "snapshot_type": "team_elo"
+    },
+    {
+      "id": "international_results_recent_form",
+      "enabled": true,
+      "source_name": "international_results_recent_form",
+      "provider": "international_results",
+      "snapshot_type": "team_recent_form"
+    },
+    {
+      "id": "openfootball_schedule",
+      "enabled": true,
+      "source_name": "openfootball_schedule",
+      "provider": "openfootball_schedule"
+    },
+    {
+      "id": "fixturedownload_schedule",
+      "enabled": true,
+      "source_name": "fixturedownload_schedule",
+      "provider": "fixturedownload_schedule"
+    },
+    {
+      "id": "espn_scoreboard",
+      "enabled": true,
+      "source_name": "espn_scoreboard",
+      "provider": "espn_scoreboard",
+      "snapshot_type": "fixture_status",
+      "query": "1:7",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "espn_summary",
+      "enabled": true,
+      "source_name": "espn_summary",
+      "provider": "espn_summary",
+      "snapshot_type": "match_summary",
+      "query": "1:2",
+      "timeout_seconds": 45
+    },
+    {
+      "id": "rss_soccer_news",
+      "enabled": true,
+      "source_name": "rss_soccer_news",
+      "provider": "rss_news",
+      "snapshot_type": "news_intel",
+      "query": "World Cup injury lineup squad",
+      "timeout_seconds": 12
+    },
+    {
+      "id": "gnews_worldcup_news",
+      "enabled": false,
+      "source_name": "gnews_worldcup_news",
+      "provider": "gnews",
+      "query": "FIFA World Cup injury lineup",
+      "snapshot_type": "news_intel"
+    },
+    {
+      "id": "the_odds_api_worldcup",
+      "enabled": false,
+      "source_name": "the_odds_api_worldcup",
+      "provider": "the_odds_api",
+      "sport_key": "soccer_fifa_world_cup",
+      "snapshot_type": "market_signal"
+    },
+    {
+      "id": "football_data_worldcup",
+      "enabled": false,
+      "source_name": "football_data_worldcup",
+      "provider": "football_data",
+      "competition_code": "WC",
+      "date_from": "2026-06-01",
+      "date_to": "2026-07-31",
+      "snapshot_type": "fixture_intel"
+    }
+  ]
+}

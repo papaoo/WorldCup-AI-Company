@@ -1,0 +1,46 @@
+# Build outputs
+bin/
+obj/
+Debug/
+Release/
+dist/
+
+# Frontend dependencies and generated output
+Frontend/worldcup-ui/node_modules/
+Frontend/worldcup-ui/dist/
+
+# Runtime data, caches and logs
+data/
+logs/
+*.db
+*.db-shm
+*.db-wal
+*.log
+
+# Local secrets and machine-specific config
+.env
+.env.*
+!.env.example
+team_config.json
+data-source-providers.json
+appsettings.Development.json
+*.user
+*.suo
+*.rsuser
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Packages
+*.nupkg
+*.snupkg
+.nuget/
+nuget/
+
