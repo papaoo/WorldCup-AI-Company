@@ -116,6 +116,18 @@ npm install
 npm run dev
 ```
 
+如果 4050 或 5174 端口被占用，可以用 PowerShell 指定端口：
+
+```powershell
+.\start.ps1 -BackendPort 4188 -FrontendPort 5175
+```
+
+本地需要运行 seed、harness、手动回测等开发端点时：
+
+```powershell
+.\start.ps1 -EnableDevEndpoints
+```
+
 ## 大模型配置
 
 项目支持 OpenAI 兼容接口。建议把密钥放在环境变量或本机私有配置里，不要提交到仓库。

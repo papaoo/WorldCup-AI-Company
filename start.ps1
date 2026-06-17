@@ -1,47 +1,80 @@
+param(
+    [int]$BackendPort = 4050,
+    [int]$FrontendPort = 5174,
+    [switch]$EnableDevEndpoints
+)
+
 $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $frontend = Join-Path $root "Frontend\worldcup-ui"
+$backendUrl = "http://localhost:$BackendPort"
+$frontendUrl = "http://127.0.0.1:$FrontendPort"
+
+function Test-PortAvailable([int]$port) {
+    $listeners = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
+    return -not $listeners
+}
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "    PiPiClaw.Team 项目启动脚本" -ForegroundColor Cyan
+Write-Host "    WorldCup AI Company startup" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
 $dotnetVersion = dotnet --version
-Write-Host "[成功] 已检测到 .NET SDK: $dotnetVersion" -ForegroundColor Green
+Write-Host "[OK] .NET SDK: $dotnetVersion" -ForegroundColor Green
 
 $nodeVersion = node --version
-Write-Host "[成功] 已检测到 Node.js: $nodeVersion" -ForegroundColor Green
+Write-Host "[OK] Node.js: $nodeVersion" -ForegroundColor Green
 
 if (-not (Test-Path (Join-Path $frontend "package.json"))) {
-    throw "未找到前端项目: $frontend"
+    throw "Frontend project was not found: $frontend"
 }
 
-Write-Host ""
-Write-Host "[信息] 后端工作目录: $root" -ForegroundColor Yellow
-Write-Host "[信息] 前端工作目录: $frontend" -ForegroundColor Yellow
-Write-Host ""
+if (-not (Test-PortAvailable $BackendPort)) {
+    throw "Backend port $BackendPort is already in use. Run stop.ps1 first or pass -BackendPort."
+}
 
-Start-Process -FilePath "dotnet" -ArgumentList "run" -WorkingDirectory $root -WindowStyle Normal
-
-Write-Host "[信息] 等待后端启动..." -ForegroundColor Yellow
-Start-Sleep -Seconds 3
+if (-not (Test-PortAvailable $FrontendPort)) {
+    throw "Frontend port $FrontendPort is already in use. Run stop.ps1 first or pass -FrontendPort."
+}
 
 if (-not (Test-Path (Join-Path $frontend "node_modules"))) {
-    Write-Host "[信息] 首次运行，正在安装前端依赖..." -ForegroundColor Yellow
+    Write-Host "[INFO] Installing frontend dependencies..." -ForegroundColor Yellow
     Push-Location $frontend
     npm install
     Pop-Location
 }
 
-Start-Process -FilePath "npm" -ArgumentList "run", "dev" -WorkingDirectory $frontend -WindowStyle Normal
+$devEndpoints = if ($EnableDevEndpoints) { "1" } else { "0" }
+
+Write-Host "[INFO] Backend dir: $root" -ForegroundColor Yellow
+Write-Host "[INFO] Frontend dir: $frontend" -ForegroundColor Yellow
+Write-Host "[INFO] Backend URL: $backendUrl/" -ForegroundColor Yellow
+Write-Host "[INFO] Frontend URL: $frontendUrl/" -ForegroundColor Yellow
+Write-Host "[INFO] Dev endpoints: $(if ($EnableDevEndpoints) { 'enabled' } else { 'disabled' })" -ForegroundColor Yellow
+Write-Host ""
+
+$backendCommand = @"
+`$env:WORLDCUP_URLS='$backendUrl/';
+`$env:WORLDCUP_ENABLE_DEV_ENDPOINTS='$devEndpoints';
+cd '$root';
+dotnet run --urls '$backendUrl'
+"@
+Start-Process -FilePath "powershell" -ArgumentList "-NoExit", "-ExecutionPolicy", "Bypass", "-Command", $backendCommand -WindowStyle Normal
+
+Start-Sleep -Seconds 3
+
+$frontendCommand = @"
+cd '$frontend';
+npm run dev -- --host 127.0.0.1 --port $FrontendPort
+"@
+Start-Process -FilePath "powershell" -ArgumentList "-NoExit", "-ExecutionPolicy", "Bypass", "-Command", $frontendCommand -WindowStyle Normal
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "    项目启动完成" -ForegroundColor Green
-Write-Host "    后端: http://localhost:4050/" -ForegroundColor White
-Write-Host "    前端: http://127.0.0.1:5174/" -ForegroundColor White
+Write-Host "    Started" -ForegroundColor Green
+Write-Host "    Backend: $backendUrl/" -ForegroundColor White
+Write-Host "    Frontend: $frontendUrl/" -ForegroundColor White
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "可以关闭此窗口，后端和前端会在新窗口继续运行。"
+
