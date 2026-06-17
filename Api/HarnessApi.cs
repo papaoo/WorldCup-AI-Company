@@ -15,6 +15,12 @@ public static class HarnessApi
         var store = AppContext.WorldCupStore;
 
         if (req.HttpMethod != "POST") return false;
+        if (!ApiHelpers.AllowDevelopmentEndpoints())
+        {
+            res.StatusCode = 403;
+            await ApiHelpers.WriteErrorAsync(res, "development endpoints are disabled", 403);
+            return true;
+        }
 
         switch (path)
         {

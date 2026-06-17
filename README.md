@@ -171,6 +171,28 @@ npm run build
 .\stop.bat
 ```
 
+## 公网部署安全边界
+
+系统默认把开发/演示端点关闭，避免公网访客误触发演示数据写入、手动工作流、大模型调用或重型回测。
+
+默认关闭的端点包括：
+
+```text
+POST /api/worldcup/seed
+POST /api/worldcup/bootstrap
+POST /api/worldcup/mock-prediction-workflow
+POST /api/worldcup/real-prediction-workflow
+POST /api/worldcup/model-backtest
+POST /api/worldcup/*-harness
+```
+
+本地开发或回归测试时可以临时开启：
+
+```powershell
+$env:WORLDCUP_ENABLE_DEV_ENDPOINTS="1"
+dotnet run --urls http://localhost:4050
+```
+
 ## 设计原则
 
 1. **事实和概率由结构化数据负责**  

@@ -39,4 +39,11 @@ internal static class ApiHelpers
         var value = req.QueryString["include_test_data"] ?? req.QueryString["includeTestData"];
         return value is "1" or "true" or "yes";
     }
+
+    public static bool AllowDevelopmentEndpoints()
+    {
+        var value = Environment.GetEnvironmentVariable("WORLDCUP_ENABLE_DEV_ENDPOINTS")
+            ?? Environment.GetEnvironmentVariable("PIPICLAW_ENABLE_DEV_ENDPOINTS");
+        return value is "1" or "true" or "yes";
+    }
 }

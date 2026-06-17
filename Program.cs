@@ -8,7 +8,7 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        const string url = "http://localhost:4050/";
+        var url = ResolveListenUrl(args);
         using var listener = new HttpListener();
         listener.Prefixes.Add(url);
 
@@ -46,6 +46,39 @@ class Program
             var context = await listener.GetContextAsync();
             _ = Task.Run(() => HandleRequestAsync(context));
         }
+    }
+
+    private static string ResolveListenUrl(string[] args)
+    {
+        var cliUrl = ReadCliUrl(args);
+        var configuredUrl = cliUrl
+            ?? Environment.GetEnvironmentVariable("WORLDCUP_URLS")
+            ?? Environment.GetEnvironmentVariable("PIPICLAW_URLS")
+            ?? Environment.GetEnvironmentVariable("ASPNETCORE_URLS")
+            ?? "http://localhost:4050/";
+
+        var firstUrl = configuredUrl.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .FirstOrDefault() ?? "http://localhost:4050/";
+        return firstUrl.EndsWith("/", StringComparison.Ordinal) ? firstUrl : $"{firstUrl}/";
+    }
+
+    private static string? ReadCliUrl(string[] args)
+    {
+        for (var i = 0; i < args.Length; i++)
+        {
+            var arg = args[i];
+            if (arg.Equals("--urls", StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length)
+            {
+                return args[i + 1];
+            }
+
+            if (arg.StartsWith("--urls=", StringComparison.OrdinalIgnoreCase))
+            {
+                return arg["--urls=".Length..];
+            }
+        }
+
+        return null;
     }
 
     private static async Task HandleRequestAsync(HttpListenerContext ctx)

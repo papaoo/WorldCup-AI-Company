@@ -5,8 +5,7 @@ using System.Text.Json;
 namespace PiPiClaw.Team;
 
 /// <summary>
-/// 世界杯核心业务 API：比赛、预测、工作流、产物、生命周期、策略评估。
-/// </summary>
+/// 涓栫晫鏉牳蹇冧笟鍔?API锛氭瘮璧涖€侀娴嬨€佸伐浣滄祦銆佷骇鐗┿€佺敓鍛藉懆鏈熴€佺瓥鐣ヨ瘎浼般€?/// </summary>
 public static class WorldCupApi
 {
     public static async Task<bool> TryHandleAsync(HttpListenerContext ctx)
@@ -26,6 +25,12 @@ public static class WorldCupApi
         }
         if (path == "/api/worldcup/seed" && req.HttpMethod == "POST")
         {
+            if (!ApiHelpers.AllowDevelopmentEndpoints())
+            {
+                res.StatusCode = 403;
+                await ApiHelpers.WriteErrorAsync(res, "development endpoints are disabled", 403);
+                return true;
+            }
             store.SeedDemoWorldCupCompany();
             res.ContentType = "application/json; charset=utf-8";
             var status = store.GetStatus();
@@ -34,6 +39,12 @@ public static class WorldCupApi
         }
         if (path == "/api/worldcup/bootstrap" && req.HttpMethod == "POST")
         {
+            if (!ApiHelpers.AllowDevelopmentEndpoints())
+            {
+                res.StatusCode = 403;
+                await ApiHelpers.WriteErrorAsync(res, "development endpoints are disabled", 403);
+                return true;
+            }
             var result = await store.BootstrapPublicWorldCupDataAsync();
             res.ContentType = "application/json; charset=utf-8";
             await ApiHelpers.WriteJsonAsync(res, result, AppJsonContext.Default.WorldCupPublicDataBootstrapResult);
@@ -139,6 +150,12 @@ public static class WorldCupApi
         // Prediction workflows (mock & real)
         if (path == "/api/worldcup/mock-prediction-workflow" && req.HttpMethod == "POST")
         {
+            if (!ApiHelpers.AllowDevelopmentEndpoints())
+            {
+                res.StatusCode = 403;
+                await ApiHelpers.WriteErrorAsync(res, "development endpoints are disabled", 403);
+                return true;
+            }
             var matchId = req.QueryString["match_id"];
             if (string.IsNullOrWhiteSpace(matchId)) { res.StatusCode = 400; await ApiHelpers.WriteErrorAsync(res, "match_id is required"); return true; }
             var result = store.RunMockMatchPredictionWorkflow(matchId);
@@ -147,6 +164,12 @@ public static class WorldCupApi
         }
         if (path == "/api/worldcup/real-prediction-workflow" && req.HttpMethod == "POST")
         {
+            if (!ApiHelpers.AllowDevelopmentEndpoints())
+            {
+                res.StatusCode = 403;
+                await ApiHelpers.WriteErrorAsync(res, "development endpoints are disabled", 403);
+                return true;
+            }
             var matchId = req.QueryString["match_id"];
             if (string.IsNullOrWhiteSpace(matchId)) { res.StatusCode = 400; await ApiHelpers.WriteErrorAsync(res, "match_id is required"); return true; }
             var result = await WorldCupWorkflowService.RunRealWorldCupWorkflowAsync(matchId);
@@ -163,6 +186,12 @@ public static class WorldCupApi
         }
         if (path == "/api/worldcup/model-backtest" && req.HttpMethod == "POST")
         {
+            if (!ApiHelpers.AllowDevelopmentEndpoints())
+            {
+                res.StatusCode = 403;
+                await ApiHelpers.WriteErrorAsync(res, "development endpoints are disabled", 403);
+                return true;
+            }
             var days = int.TryParse(req.QueryString["days"], out var parsedDays) ? parsedDays : 1095;
             var limit = int.TryParse(req.QueryString["limit"], out var parsedLimit) ? parsedLimit : 300;
             var result = await store.RunAndCacheModelBacktestAsync(days, limit);
